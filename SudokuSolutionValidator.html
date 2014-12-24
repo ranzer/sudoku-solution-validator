@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+	  
+	  table {
+	    border-collapse: collapse;
+	  }
+	  
+	  table span {
+	    border: 1px solid #fafafa;
+		display: inline-block;
+	    padding: 0.5em;
+		text-align: center;
+		width: 1em;
+	  }
+	  
+	  table span:hover {
+	    cursor: pointer;
+	  }
+	  
+	  table tr td:first-child {
+	    border-left: 2px solid #dedaef;
+	  }
+	  
+	  table tr:first-child td {
+	    border-top: 2px solid #dedaef;
+	  }
+	  
+	  table td:nth-child(3n) {
+	    border-right: 2px solid #dedaef;
+	  }
+	  
+	  table tr:nth-child(3n) td {
+	    border-bottom: 2px solid #dedaef;
+	  }
+	  
+	  #numbersPicker {
+	    background: #ff0000;
+	    display: none;
+		position: absolute;
+	  }
+	  
+	  #numbersPicker.hideChildren div {
+	    display: none;
+	  }
+	  
+	  #numbersPicker div {
+	    height: 33.3333%;
+	  }
+	  
+	  #numbersPicker div span {
+	    border: 1px solid #ffffff;
+		display: inline-block;
+		height: 83%;
+		margin: 1% 0 0 1%;
+		padding-top: 3%;
+		text-align: center;
+		vertical-align: middle;
+		width: 30.3333%;
+	  }
+	  
+	</style>
+    <script src="SudokuSolutionValidator.js"></script>
+	<script>
+	   var matrix = [
+	     [1, 2, 3, 4, 5, 6, 7, 8, 9],
+		 [4, 5, 6, 7, 8, 9, 1, 2, 3],
+		 [7, 8, 9, 1, 2, 3, 4, 5, 6],
+		 [2, 3, 4, 5, 6, 7, 8, 9, 1],
+		 [5, 6, 7, 8, 9, 1, 2, 3, 4],
+		 [8, 9, 1, 2, 3, 4, 5, 6, 7],
+		 [3, 4, 5, 6, 7, 8, 9, 1, 2],
+		 [6, 7, 8, 9, 1, 2, 3, 4, 5],
+		 [9, 1, 2, 3, 4, 5, 6, 7, 8]
+ 	   ];
+	   var ssc = new SudokuSolutionChecker(matrix);
+	   var result = ssc.isSolved();
+	   console.log('result: ' + result);
+	    
+	   window.onload = function() {
+		   console.log(document.querySelector);
+		   
+		   var table = document.querySelector("#sudokuContainer"),
+		       numbersPicker = document.getElementById("numbersPicker"),
+			   numbersPickerSpans = numbersPicker.querySelectorAll("span"),
+			   cell, span, i, count;
+		   
+		    for (i = 0, count = numbersPickerSpans.length; i < count; i++) {
+				numbersPickerSpans[i].onclick = function(e) {
+					var numbersPicker = this.parentElement;
+					
+					console.log(numbersPicker);
+				};
+			}
+		   
+		   for (var row = 0; row < 9; row++) {
+		     var tableRow = table.insertRow(row);
+			 
+			 for (var col = 0; col < 9; col++) {
+			   var cell = tableRow.insertCell(0);
+			   
+			   var span = document.createElement("span");
+			   
+			   span.innerHTML = col + 1;
+			   
+			   span.onclick = function(e) {
+			      var spanStyle = window.getComputedStyle(this),
+				      td = e.target.parentElement,
+					  limitX, animateTimeout;
+					  
+				  numbersPicker.className = numbersPicker.className + " hideChildren";
+				  numbersPicker.style.left = (td.offsetLeft + table.offsetLeft) + "px";
+				  numbersPicker.style.top = (td.offsetTop + table.offsetTop) + "px";
+				  numbersPicker.style.display = "block";
+				  numbersPicker.style.height = td.clientHeight + "px";
+			      numbersPicker.style.width = td.clientWidth + "px";
+				  
+				  limitX = parseInt(numbersPicker.style.left) + 50;
+				  
+				  var animate = function() {
+				    var numbersPickerLeft = parseInt(numbersPicker.style.left);
+				    if (numbersPickerLeft < limitX) {
+					    numbersPicker.style.top = (parseInt(numbersPicker.style.top) + 2) + "px";
+						numbersPicker.style.left = (parseInt(numbersPickerLeft) + 5) + "px";
+						numbersPicker.style.height = (parseInt(numbersPicker.style.height) + 5) + "px";
+						numbersPicker.style.width = (parseInt(numbersPicker.style.width) + 5) + "px";
+					
+						animateTimeout = setTimeout(animate, 5);
+					} else {
+					
+					  numbersPicker.className = numbersPicker.className.replace(/(\w+)*hideChildren(\w+)*/, "$1$2").trim();
+					  
+					  clearTimeout(animateTimeout);
+					}
+				  };
+				  
+				  animateTimeout = setTimeout(animate, 100);
+			   };
+			   
+			   cell.appendChild(span);
+			 }
+		   }
+		   
+/*		   var row = header.insertRow(0);
+		   
+		   var th = document.createElement("th");
+		   
+		   row.appendChild(th);
+		   
+		   th.innerHTML = "Test";		   */
+	   };
+	   
+	</script>
+  </head>
+  <body>
+    <table cellpadding="0" id="sudokuContainer">
+	</table>
+	<div id="numbersPicker">
+	  <div>
+	    <span>1</span><span>2</span><span>3</span>
+	  </div>
+	  <div>
+	    <span>4</span><span>5</span><span>6</span>
+	  </div>
+	  <div>
+	    <span>7</span><span>8</span><span>9</span>
+	  </div>
+	</div>
+  </body>
+</html>
